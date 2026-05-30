@@ -39,7 +39,7 @@ recognized formats:
 
 ```
 <Sopel> [MangaDex] (unknown title) | Chapter 1, page 7 of Kono Bijutsubu
-        ni wa Mondai ga Aru!`
+        ni wa Mondai ga Aru!
 ```
 
 This particular chapter doesn't have a title of its own.
