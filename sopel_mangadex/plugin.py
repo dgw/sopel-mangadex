@@ -32,9 +32,13 @@ def _get_preferred_manga_title(
     # is pretty annoying. The title and altTitles attributes are dictionaries of
     # language codes to title strings, and there are TWO attributes where you
     # might find the language code you prefer.
-    all_titles = manga.title.copy()
+    all_titles = {}
     for alt_title in manga.altTitles:
         all_titles.update(alt_title)
+    # Do the main title last so it takes precedence over altTitles if there are
+    # duplicates, e.g. Konobi's romaji title is (2026-05-30) wrongly tagged as
+    # `en`. This prioritizes matching what the user will likely see on-site.
+    all_titles.update(manga.title)
     return (
         all_titles.get('ja-ro') or all_titles.get('en') or all_titles.get('ja')
     )
