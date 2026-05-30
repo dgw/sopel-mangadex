@@ -25,6 +25,21 @@ STATUS_VALUES = {
 }
 
 
+def _get_preferred_manga_title(
+    manga: mangadex.series.Manga,
+) -> str | None:
+    # How the library handles titles (if not the underlying API; I didn't look)
+    # is pretty annoying. The title and altTitles attributes are dictionaries of
+    # language codes to title strings, and there are TWO attributes where you
+    # might find the language code you prefer.
+    all_titles = manga.title.copy()
+    for alt_title in manga.altTitles:
+        all_titles.update(alt_title)
+    return (
+        all_titles.get('ja-ro') or all_titles.get('en') or all_titles.get('ja')
+    )
+
+
 @plugin.url(r'https://mangadex.org/title/(?P<uuid>[0-9a-f-]+)(?:/(?P<slug>[0-9a-z-]+))?')
 @plugin.output_prefix(OUTPUT_PREFIX)
 def manga_title_link(bot, trigger):
@@ -37,7 +52,7 @@ def manga_title_link(bot, trigger):
         return
 
     parts = []
-    parts.append(manga.title.get('en', manga.title.get('ja', 'Unknown title')))
+    parts.append(_get_preferred_manga_title(manga) or 'Unknown title')
     parts.append(f'Content: {RATING_VALUES[manga.contentRating]}')
     parts.append(STATUS_VALUES[manga.status])
     parts.append(', '.join(tag.name.get('en') for tag in manga.tags))
@@ -77,7 +92,7 @@ def manga_chapter_link(bot, trigger):
     if chapter_number.is_integer():
         chapter_number = int(chapter_number)
 
-    manga_title = manga.title.get('en', manga.title.get('ja', 'Unknown title'))
+    manga_title = _get_preferred_manga_title(manga) or 'Unknown title'
 
     parts = []
     parts.append(
