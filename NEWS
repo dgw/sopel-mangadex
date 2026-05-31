@@ -3,3 +3,5 @@
 ### 0.1.0
 
 First release of `sopel-mangadex`.
+
+Handles the basics: Links to series pages, links to chapters.
